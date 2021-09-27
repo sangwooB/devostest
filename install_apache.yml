@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+  - name: Install apache packages
+    yum:
+      name: httpd.x86_64
+      state: latest
+  - name: ensure httpd is running
+    service:
+      name: httpd
+      state: started
