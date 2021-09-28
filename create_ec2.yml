@@ -15,5 +15,5 @@
         group: demo sg devos
         wait: yes
         count: 1
-        vpc_subnet_id: "Subnet 아이디를 입력하세요."
+        vpc_subnet_id: subnet-07962d9e4e67f1e74
         assign_public_ip: yes
