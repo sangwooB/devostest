@@ -4,68 +4,6 @@
   become: yes
 
   tasks:
-    - name: Create VPC
-      ec2_vpc_net:
-        name: Test VPC
-        cidr_block: 10.10.0.0/16
-        region: ap-northeast-1
-        state: present
-      register: vpc_result
-
-    - name: Create Internet Gateway
-      ec2_vpc_igw:
-        vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
-        state: present
-        tags:
-          Name: tokyo_igw
-
-    - name: Create Public Subnet
-      ec2_vpc_subnet:
-        cidr: 10.10.0.0/24
-        vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
-        az: ap-northeast-1a
-        map_public: yes
-        state: present
-      register: subnet_result
-
-    - name: Create Routing Table
-      ec2_vpc_route_table:
-        vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
-        state: present
-        subnets: ["{{ subnet_result.subnet.id }}"]
-        
-    - name: Create Security Group
-      ec2_group:
-        name: demo sg devos
-        vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
-        state: present
-        description: allow 22, 80 devos 
-        tags:
-          Name: demo sg devos
-        rules:
-        - proto: tcp
-          ports:
-          - 22
-          cidr_ip: 0.0.0.0/0
-        - proto: tcp
-          ports:
-          - 80
-          cidr_ip: 0.0.0.0/0
-
-    - name: Create Tokyo EC2 key
-      ec2_key:
-        name: testkey
-        region: ap-northeast-1
-      register: key_result
-
-    - name: Save Private Key
-      copy: content="{{ key_result.key.private_key }}" dest=/root/.ssh/testkey.pem mode=0400
-      when: key_result.changed
-
     - name: Create EC2
       ec2:
         key_name: testkey
@@ -77,5 +15,5 @@
         group: demo sg devos
         wait: yes
         count: 1
-        vpc_subnet_id: "{{ subnet_result.subnet.id }}"
+        vpc_subnet_id: "Subnet 아이디를 입력하세요."
         assign_public_ip: yes
