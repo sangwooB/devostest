@@ -1,0 +1,122 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+    - name: Create VPC
+      ec2_vpc_net:
+        name: DEVOS TEST VPC
+        cidr_block: 10.10.0.0/16
+        region: ap-northeast-1
+        state: present
+      register: vpc_result
+
+    - name: Create Internet Gateway
+      ec2_vpc_igw:
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        state: present
+        tags:
+          Name: DEVOS igw
+      register: igw
+
+    - name: Create DB Subnet AZa
+      ec2_vpc_subnet:
+        cidr: 10.10.11.0/24
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        az: ap-northeast-1a
+        map_public: yes
+        state: present
+        tags:
+          Name: DEVOS DB Subnet AZa
+      register: db_subneta_result
+
+    - name: Create DB Subnet AZc
+      ec2_vpc_subnet:
+        cidr: 10.10.12.0/24
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        az: ap-northeast-1c
+        map_public: yes
+        state: present
+        tags:
+          Name: DEVOS DB Subnet AZc
+      register: db_subnetc_result
+
+    - name: Add or change a subnet group
+      rds_subnet_group:
+        state: present
+        region: ap-northeast-1
+        name: DEVOS DB subnet group
+        description: DEVOS DB subnet group
+        subnets:
+          - "{{ db_subneta_result.subnet.id }}"
+          - "{{ db_subnetc_result.subnet.id }}"
+      register: db_subnet_group_result
+
+    - name: Create Routing Table
+      ec2_vpc_route_table:
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        tags:
+          Name: DEVOS Routing Table
+        state: present
+        subnets: 
+          - "{{ db_subneta_result.subnet.id }}"
+          - "{{ db_subnetc_result.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+      register: public_route_table
+
+    - name: Create EC2 Security Group
+      ec2_group:
+        name: DEVOS EC2 SG
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        state: present
+        description: allow 22, 80 devos 
+        tags:
+          Name: DEVOS EC2 SG
+        rules:
+        - proto: tcp
+          ports:
+          - 22
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          ports:
+          - 80
+          cidr_ip: 0.0.0.0/0
+
+    - name: Create RDS Security Group
+      ec2_group:
+        name: DEVOS RDS SG
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        state: present
+        description: allow 3306 devos 
+        tags:
+          Name: DEVOS RDS SG
+        rules:
+        - proto: tcp
+          ports:
+          - 3306
+          cidr_ip: 0.0.0.0/0
+      register: vpc_security_groups_result
+
+    - name: Create RDS mysql
+      rds:
+         command: create
+         region: ap-northeast-1
+         instance_name: devos-rds
+         db_engine: MySQL
+         size: 10
+         instance_type: db.t3.micro
+         subnet: "{{ db_subnet_group_result.subnet.id }}"
+         vpc_security_groups:  "{{vpc_security_groups_result.id }}"
+         username: mysql_admin
+         password: 1nsecure
+         tags:
+           Name: DEVOS RDS
