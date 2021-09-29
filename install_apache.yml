@@ -12,5 +12,5 @@
     - name: ensure httpd is running
       service:
         name: httpd
-        enabled=yes
+        enabled: yes
         state: started
