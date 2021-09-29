@@ -91,7 +91,7 @@
           - "{{ web_subnet_result.subnet.id }}"
           - "{{ was_subnet_result.subnet.id }}"
           - "{{ db_subneta_result.subnet.id }}"
-          - "{{ db_subnetb_result.subnet.id }}"
+          - "{{ db_subnetc_result.subnet.id }}"
         routes:
           - dest: 0.0.0.0/0
             gateway_id: "{{ igw.gateway_id }}"
@@ -167,6 +167,7 @@
          db_engine: MySQL
          size: 10
          instance_type: db.t3.micro
+         subnet: "{{ db_subnet_group_result.subnet }}"
          vpc_security_groups: DEVOS RDS SG
          username: mysql_admin
          password: 1nsecure
