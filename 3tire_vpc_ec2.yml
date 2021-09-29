@@ -1,0 +1,133 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+    - name: Create VPC
+      ec2_vpc_net:
+        name: DEVOS TEST VPC
+        cidr_block: 10.10.0.0/16
+        region: ap-northeast-1
+        state: present
+      register: vpc_result
+
+    - name: Create Internet Gateway
+      ec2_vpc_igw:
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        state: present
+        tags:
+          Name: DEVOS igw
+      register: igw
+
+    - name: Create web Subnet
+      ec2_vpc_subnet:
+        cidr: 10.10.0.0/24
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        az: ap-northeast-1a
+        map_public: yes
+        state: present
+        tags:
+          Name: DEVOS WEB Subnet
+      register: web_subnet_result
+
+    - name: Create WAS Subnet
+      ec2_vpc_subnet:
+        cidr: 10.10.1.0/24
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        az: ap-northeast-1a
+        map_public: yes
+        state: present
+        tags:
+          Name: DEVOS WAS Subnet
+      register: was_subnet_result
+
+    - name: Create DB Subnet
+      ec2_vpc_subnet:
+        cidr: 10.10.2.0/24
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        az: ap-northeast-1a
+        map_public: yes
+        state: present
+        tags:
+          Name: DEVOS DB Subnet
+      register: db_subnet_result
+
+    - name: Create Routing Table
+      ec2_vpc_route_table:
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        state: present
+        subnets: 
+          - "{{ web_subnet_result.subnet.id }}"
+          - "{{ was_subnet_result.subnet.id }}"
+          - "{{ db_subnet_result.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+      register: public_route_table
+
+    - name: Create Security Group
+      ec2_group:
+        name: DEVOS SG
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-1
+        state: present
+        description: allow 22, 80 devos 
+        tags:
+          Name: DEVOS SG
+        rules:
+        - proto: tcp
+          ports:
+          - 22
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          ports:
+          - 80
+          cidr_ip: 0.0.0.0/0
+
+    - name: Create WEB EC2
+      ec2:
+        key_name: testkey
+        instance_tags:
+          Name: DEVOS WEB EC2
+        region: ap-northeast-1
+        instance_type: t2.micro
+        image: ami-0ce107ae7af2e92b5
+        group: DEVOS SG
+        wait: yes
+        count: 1
+        vpc_subnet_id: "{{ web_subnet_result.subnet.id }}"
+        assign_public_ip: yes
+
+    - name: Create WAS EC2
+      ec2:
+        key_name: testkey
+        instance_tags:
+          Name: DEVOS WAS EC2
+        region: ap-northeast-1
+        instance_type: t2.micro
+        image: ami-0ce107ae7af2e92b5
+        group: DEVOS SG
+        wait: yes
+        count: 1
+        vpc_subnet_id: "{{ was_subnet_result.subnet.id }}"
+        assign_public_ip: yes
+
+    - name: Create DB EC2
+      ec2:
+        key_name: testkey
+        instance_tags:
+          Name: DEVOS DB EC2
+        region: ap-northeast-1
+        instance_type: t2.micro
+        image: ami-0ce107ae7af2e92b5
+        group: DEVOS SG
+        wait: yes
+        count: 1
+        vpc_subnet_id: "{{ db_subnet_result.subnet.id }}"
+        assign_public_ip: yes
