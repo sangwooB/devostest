@@ -121,12 +121,15 @@
         assign_public_ip: yes
 
     - name: Create RDS mysql
-      community.aws.rds:
+      rds:
          command: create
+         region: ap-northeast-1
          instance_name: devos-rds
          db_engine: MySQL
          size: 10
          instance_type: db.t3.micro
+         subnet: "{{ db_subnet_result.subnet }}"
+         vpc_security_groups: DEVOS SG
          username: mysql_admin
          password: 1nsecure
          tags:
