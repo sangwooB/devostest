@@ -71,13 +71,13 @@
 
     - name: Add or change a subnet group
       rds_subnet_group:
-        vpc_id: "{{ vpc_result.vpc.id }}"
         state: present
         name: DEVOS DB subnet group
         description: DEVOS DB subnet group
         subnets:
           - "{{ db_subneta_result.subnet.id }}"
           - "{{ db_subnetc_result.subnet.id }}"
+        vpc_id: "{{ vpc_result.vpc.id }}"
       register: db_subnet_group_result
 
     - name: Create Routing Table
