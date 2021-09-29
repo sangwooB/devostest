@@ -56,6 +56,23 @@
           - "{{ db_subnetc_result.subnet.id }}"
       register: db_subnet_group_result
 
+    - name: Create db_subnet_group
+      db_subnet_group:
+         description: private subnet group for database
+         name: DEVOS RDS DB Subnet_group
+         status: complete
+           subnets:
+             availability_zone:
+               name: ap-northeast-1a
+           identifier: "{{ db_subneta_result.subnet.id }}"
+           status: active
+             availability_zone:
+               name: ap-northeast-1c
+           identifier: "{{ db_subnetc_result.subnet.id }}"
+           status: active
+         vpc_id: "{{ vpc_result.vpc.id }}"
+      register: db_subnet_group1_result
+
     - name: Create Routing Table
       ec2_vpc_route_table:
         vpc_id: "{{ vpc_result.vpc.id }}"
@@ -116,19 +133,7 @@
          instance_type: db.t3.micro
          username: mysql_admin
          password: 1nsecure
-         db_subnet_group:
-           description: private subnet group for database
-           name: DEVOS RDS DB Subnet_group
-           status: complete
-             subnets:
-               availability_zone:
-                 name: ap-northeast-1a
-             identifier: "{{ db_subneta_result.subnet.id }}"
-             status: active
-               availability_zone:
-                 name: ap-northeast-1c
-             identifier: "{{ db_subnetc_result.subnet.id }}"
-             status: active
-           vpc_id: "{{ vpc_result.vpc.id }}"
+         subnet: "{{ db_subnet_group1_result.subnet.id }}"
+         vpc_security_groups: DEVOS RDS SG
          tags:
            Name: DEVOS RDS
