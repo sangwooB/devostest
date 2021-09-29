@@ -4,14 +4,6 @@
   become: yes
 
   tasks:
-    - name: Host Info Facts
-      command: "{{ command }}"
-      register: host_info
-
-    - name: Print Host Name
-      debug:
-        msg: "This hostName is   {{ host_info.stdout }}   "
-
     - name: Install apache packages
       yum:
         name: httpd
