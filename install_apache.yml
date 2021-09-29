@@ -1,17 +1,14 @@
 ---
-- hosts: localhost
+- hosts: webserver
   connection: local
   become: yes
 
   tasks:
-  - name: Update yum packages
-    yum:
-      name:  '*'
-      state: latest
   - name: Install apache packages
     yum:
       name: httpd
       state: latest
+
   - name: ensure httpd is running
     service:
       name: httpd
