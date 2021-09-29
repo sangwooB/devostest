@@ -130,6 +130,7 @@
           ports:
           - 3306
           cidr_ip: 0.0.0.0/0
+      register: vpc_security_group_result
 
     - name: Create WEB EC2
       ec2:
@@ -167,9 +168,9 @@
          db_engine: MySQL
          size: 10
          instance_type: db.t3.micro
-         subnet: "{{ db_subnet_group_result.subnet }}"
-         vpc_security_groups: DEVOS RDS SG
          username: mysql_admin
-         password: 1nsecure
+         password: 1q2w3e
+         subnet: DEVOS DB subnet group
+         vpc_security_groups: "{{ vpc_security_group_result.group_id }}"
          tags:
            Name: DEVOS RDS
