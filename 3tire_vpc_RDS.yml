@@ -116,5 +116,19 @@
          instance_type: db.t3.micro
          username: mysql_admin
          password: 1nsecure
+         db_subnet_group:
+           description: private subnet group for database
+           name: DEVOS RDS DB Subnet_group
+           status: Complete
+             subnets:
+               availability_zone:
+                 name: ap-northeast-1a
+             identifier: "{{ db_subneta_result.subnet.id }}"
+             status: active
+               availability_zone:
+                 name: ap-northeast-1c
+             identifier: "{{ db_subnetc_result.subnet.id }}"
+             status: active
+           vpc_id: "{{ vpc_result.vpc.id }}"
          tags:
            Name: DEVOS RDS
