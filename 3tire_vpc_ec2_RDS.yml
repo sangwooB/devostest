@@ -169,7 +169,7 @@
          size: 10
          instance_type: db.t3.micro
          username: mysql_admin
-         password: 1q2w3e
+         password: djswj1sk!
          subnet: DEVOS DB subnet group
          vpc_security_groups: "{{ vpc_security_group_result.group_id }}"
          tags:
