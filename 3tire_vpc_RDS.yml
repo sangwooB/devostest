@@ -104,7 +104,7 @@
           ports:
           - 3306
           cidr_ip: 0.0.0.0/0
-      register: vpc_security_groups_result
+      register: vpc_security_group_result
 
     - name: Create RDS mysql
       rds:
@@ -117,6 +117,6 @@
          username: mysql_admin
          password: 1nsecure
          subnet: DEVOS DB subnet group
-         vpc_security_groups: DEVOS RDS SG
+         vpc_security_groups: "{{ vpc_security_group_result.group_id }}"
          tags:
            Name: DEVOS RDS
