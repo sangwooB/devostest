@@ -116,7 +116,7 @@
          instance_type: db.t3.micro
          username: mysql_admin
          password: 1nsecure
-         subnet: "{{ db_subnet_group_result.subnet.id }}"
+         subnet: DEVOS DB subnet group
          vpc_security_groups: DEVOS RDS SG
          tags:
            Name: DEVOS RDS
