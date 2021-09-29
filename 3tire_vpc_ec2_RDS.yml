@@ -122,14 +122,14 @@
 
     - name: Create RDS mysql
       community.aws.rds:
-        command: create
-        instance_name: devos-rds
-        db_engine: MySQL
-        size: 10
-        instance_type: db.t3.micro
-        subnet: "{{ db_subnet_result.subnet }}"
-        vpc_security_groups: DEVOS SG
-        username: mysql_admin
-        password: 1nsecure
-        tags:
-          Name: DEVOS RDS
+         command: create
+         instance_name: devos-rds
+         db_engine: MySQL
+         size: 10
+         instance_type: db.t3.micro
+         subnet: "{{ db_subnet_result.subnet }}"
+         vpc_security_groups: DEVOS SG
+         username: mysql_admin
+         password: 1nsecure
+         tags:
+           Name: DEVOS RDS
