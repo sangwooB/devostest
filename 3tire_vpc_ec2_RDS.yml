@@ -77,7 +77,8 @@
         description: DEVOS DB subnet group
         subnets:
           - "{{ db_subneta_result.subnet.id }}"
-          - "{{ db_subnetb_result.subnet.id }}"
+          - "{{ db_subnetc_result.subnet.id }}"
+      register: db_subnet_group_result
 
     - name: Create Routing Table
       ec2_vpc_route_table:
