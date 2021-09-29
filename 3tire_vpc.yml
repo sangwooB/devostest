@@ -6,7 +6,7 @@
   tasks:
     - name: Create VPC
       ec2_vpc_net:
-        name: Test VPC
+        name: Test111 VPC
         cidr_block: 10.10.0.0/16
         region: ap-northeast-1
         state: present
@@ -19,6 +19,7 @@
         state: present
         tags:
           Name: tokyo_igw
+      register: igw_result
 
     - name: Create web Subnet
       ec2_vpc_subnet:
@@ -30,7 +31,7 @@
         state: present
         tags:
           Name: WEB Subnet
-      register: subnet_result
+      register: web_subnet_result
 
     - name: Create WAS Subnet
       ec2_vpc_subnet:
@@ -42,7 +43,7 @@
         state: present
         tags:
           Name: WAS Subnet
-      register: subnet_result
+      register: was_subnet_result
 
     - name: Create DB Subnet
       ec2_vpc_subnet:
@@ -54,11 +55,18 @@
         state: present
         tags:
           Name: DB Subnet
-      register: subnet_result
+      register: db_subnet_result
 
     - name: Create Routing Table
       ec2_vpc_route_table:
         vpc_id: "{{ vpc_result.vpc.id }}"
         region: ap-northeast-1
         state: present
-        subnets: ["{{ subnet_result.subnet.id }}"]
+        subnets: 
+          - "{{ web_subnet_result.subnet.id }}"
+          - "{{ was_subnet_result.subnet.id }}"
+          - "{{ db_subnet_result.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw_result.gateway_id }}"
+  register: public_route_table
