@@ -4,11 +4,13 @@
   become: yes
 
   tasks:
-    - name: Install apache packages
-      shell: "yum install httpd"
-      become: yes
-
-    - name: apache start
-      shell: "/bin/systemctl start httpd.service"
-      become: yes
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+    
+    - name: Start httpd
+      service:
+        name: httpd
+        state: started
 
