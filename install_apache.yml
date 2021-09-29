@@ -5,7 +5,10 @@
 
   tasks:
     - name: Install apache packages
-      yum:
-        name: httpd
-        state: latest
+      shell: "yum install httpd"
+      become: yes
+
+    - name: apache start
+      shell: "/bin/systemctl start httpd.service"
+      become: yes
 
