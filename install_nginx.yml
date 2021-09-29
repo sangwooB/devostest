@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: targetServer
   gather_facts: False
   become: true
   become_method: sudo
