@@ -114,8 +114,6 @@
          db_engine: MySQL
          size: 10
          instance_type: db.t3.micro
-         subnet: "{{ db_subnet_group_result.subnet.id }}"
-         vpc_security_groups:  "{{vpc_security_groups_result.id }}"
          username: mysql_admin
          password: 1nsecure
          tags:
