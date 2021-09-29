@@ -7,10 +7,4 @@
     - name: Install apache packages
       yum:
         name: httpd
-        state: latest
-
-    - name: ensure httpd is running
-      service:
-        name: httpd
-        enabled: yes
-        state: started
+        state: present
