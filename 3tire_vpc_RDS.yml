@@ -59,7 +59,6 @@
     - name: Create db_subnet_group
       db_subnet_group:
          description: private subnet group for database
-         name: DEVOS RDS DB Subnet_group
            subnets:
              availability_zone:
                name: ap-northeast-1a
