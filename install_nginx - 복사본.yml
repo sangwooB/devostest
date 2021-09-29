@@ -4,7 +4,15 @@
   become: true
   become_method: sudo
   
-  tasks:    
+  tasks:
+    - name: Host Info Facts
+      command: "{{ command }}"
+      register: host_info
+
+    - name: Print Host Name
+      debug:
+        msg: "This hostName is   {{ host_info.stdout }}   "
+    
     - name: Enable nginx for amazon linux 2
       shell: "amazon-linux-extras enable nginx1.12"
       become: yes
