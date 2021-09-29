@@ -4,12 +4,20 @@
   become: yes
 
   tasks:
-  - name: Install apache packages
-    yum:
-      name: httpd
-      state: latest
+    - name: Host Info Facts
+      command: "{{ command }}"
+      register: host_info
 
-  - name: ensure httpd is running
-    service:
-      name: httpd
-      state: started
+    - name: Print Host Name
+      debug:
+        msg: "This hostName is   {{ host_info.stdout }}   "
+
+    - name: Install apache packages
+      yum:
+        name: httpd
+        state: latest
+
+    - name: ensure httpd is running
+      service:
+        name: httpd
+        state: started
