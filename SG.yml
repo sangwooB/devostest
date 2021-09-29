@@ -7,7 +7,7 @@
     - name: Create Security Group
       ec2_group:
         name: demo sg devos
-        vpc_id: "{{ vpc_result.vpc.id }}"
+        vpc_id: vpc-008f87d2173433eb1
         region: ap-northeast-1
         state: present
         description: allow 8080, 443 devos 

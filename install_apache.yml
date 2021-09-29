@@ -4,9 +4,13 @@
   become: yes
 
   tasks:
+  - name: Update yum packages
+    yum:
+      name:  '*'
+      state: latest
   - name: Install apache packages
     yum:
-      name: httpd.x86_64
+      name: httpd
       state: latest
   - name: ensure httpd is running
     service:

@@ -17,3 +17,45 @@
         count: 1
         vpc_subnet_id: subnet-07962d9e4e67f1e74
         assign_public_ip: yes
+
+    - name: Create WEB EC2
+      ec2:
+        key_name: testkey
+        instance_tags:
+          Name: WEB EC2
+        region: ap-northeast-1
+        instance_type: t2.micro
+        image: ami-0ce107ae7af2e92b5
+        group: demo sg devos
+        wait: yes
+        count: 1
+        vpc_subnet_id: subnet-09df63f3b8b012964
+        assign_public_ip: yes
+
+    - name: Create WAS EC2
+      ec2:
+        key_name: testkey
+        instance_tags:
+          Name: WAS EC2
+        region: ap-northeast-1
+        instance_type: t2.micro
+        image: ami-0ce107ae7af2e92b5
+        group: demo sg devos
+        wait: yes
+        count: 1
+        vpc_subnet_id: subnet-0c7fa330bfe7d14f3
+        assign_public_ip: yes
+
+    - name: Create DB EC2
+      ec2:
+        key_name: testkey
+        instance_tags:
+          Name: DB EC2
+        region: ap-northeast-1
+        instance_type: t2.micro
+        image: ami-0ce107ae7af2e92b5
+        group: demo sg devos
+        wait: yes
+        count: 1
+        vpc_subnet_id: subnet-0a88a4269174e6256
+        assign_public_ip: yes
