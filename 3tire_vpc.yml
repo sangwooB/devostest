@@ -19,7 +19,7 @@
         state: present
         tags:
           Name: tokyo_igw
-      register: igw_result
+      register: igw
 
     - name: Create web Subnet
       ec2_vpc_subnet:
@@ -68,5 +68,5 @@
           - "{{ db_subnet_result.subnet.id }}"
         routes:
           - dest: 0.0.0.0/0
-            gateway_id: "{{ igw_result.gateway_id }}"
+            gateway_id: "{{ igw.gateway_id }}"
   register: public_route_table
