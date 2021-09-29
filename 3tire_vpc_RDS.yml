@@ -119,7 +119,7 @@
          db_subnet_group:
            description: private subnet group for database
            name: DEVOS RDS DB Subnet_group
-           status: Complete
+           status: complete
              subnets:
                availability_zone:
                  name: ap-northeast-1a
