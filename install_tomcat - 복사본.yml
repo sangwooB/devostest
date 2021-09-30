@@ -3,6 +3,22 @@
   gather_facts: False
   become: true
   become_method: sudo
+  
+  tasks:    
+    - name: update repos
+      yum:
+        name: "*"
+        state: latest
+    
+    - name: install jdk
+      yum:
+        name: java-1.8.0-openjdk
+
+    - name: setting java
+      alternatives:
+        name: java
+        link: /usr/bin/java
+        path: /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java
 
     - name: download tomcat
       get_url:
