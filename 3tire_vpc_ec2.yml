@@ -91,6 +91,10 @@
           ports:
           - 80
           cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          ports:
+          - 8080
+          cidr_ip: 0.0.0.0/0
 
     - name: Create WEB EC2
       ec2:
