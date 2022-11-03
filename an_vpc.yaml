@@ -8,14 +8,14 @@
       ec2_vpc_net:
         name: DevOS DEMO VPC
         cidr_block: 10.15.0.0/16
-        region: ap-northeast-1
+        region: ap-northeast-3
         state: present
       register: vpc_result
 
     - name: Create Internet Gateway
       ec2_vpc_igw:
         vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
+        region: ap-northeast-3
         state: present
         tags:
           Name: DevOS_DEMO_tokyo_igw
@@ -24,7 +24,7 @@
       ec2_vpc_subnet:
         cidr: 10.15.0.0/24
         vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
+        region: ap-northeast-3
         az: ap-northeast-1a
         map_public: yes
         state: present
