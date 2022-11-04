@@ -7,17 +7,17 @@
   tasks:    
     - name: download tomcat
       get_url:
-        url: https://mirror.dsrg.utoronto.ca/apache/tomcat/tomcat-8/v8.5.71/bin/apache-tomcat-8.5.71.tar.gz
+        url: https://mirror.dsrg.utoronto.ca/apache/tomcat/tomcat-8/v8.5.83/bin/apache-tomcat-8.5.83.tar.gz
         dest: /usr/local
 
     - name: copy tomcat
       unarchive:
-        src: "/usr/local/apache-tomcat-8.5.71.tar.gz"
+        src: "/usr/local/apache-tomcat-8.5.83.tar.gz"
         dest: /usr/local
         remote_src: yes
 
     - name: renaming tomcat
-      command: mv /usr/local/apache-tomcat-8.5.71 /usr/local/tomcat
+      command: mv /usr/local/apache-tomcat-8.5.83 /usr/local/tomcat
 
     - name: starting tomcat
       shell: nohup /usr/local/tomcat/bin/startup.sh &
