@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+    - name: Create VPC
+      ec2_vpc_net:
+        name: DevOS DEMO VPC
+        cidr_block: 10.15.0.0/16
+        region: ap-northeast-3
+        state: present
+      register: vpc_result
