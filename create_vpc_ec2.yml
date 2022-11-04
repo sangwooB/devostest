@@ -6,46 +6,39 @@
   tasks:
     - name: Create VPC
       ec2_vpc_net:
-        name: Test VPC
-        cidr_block: 10.10.0.0/16
-        region: ap-northeast-1
+        name: DevOS DEMO VPC
+        cidr_block: 10.15.0.0/16
+        region: ap-northeast-3
         state: present
       register: vpc_result
 
     - name: Create Internet Gateway
       ec2_vpc_igw:
         vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
+        region: ap-northeast-3
         state: present
         tags:
-          Name: tokyo_igw
+          Name: DevOS_DEMO_tokyo_igw
 
     - name: Create Public Subnet
       ec2_vpc_subnet:
-        cidr: 10.10.0.0/24
+        cidr: 10.15.0.0/24
         vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
+        region: ap-northeast-3
         az: ap-northeast-1a
         map_public: yes
         state: present
       register: subnet_result
 
-    - name: Create Routing Table
-      ec2_vpc_route_table:
-        vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
-        state: present
-        subnets: ["{{ subnet_result.subnet.id }}"]
-        
     - name: Create Security Group
       ec2_group:
-        name: demo sg devos
+        name: devos-demo-sg
         vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-1
+        region: ap-northeast-3
         state: present
-        description: allow 22, 80 devos 
+        description: allow 22, 80 devos-demo-sg 
         tags:
-          Name: demo sg devos
+          Name: devos-demo-sg
         rules:
         - proto: tcp
           ports:
@@ -56,25 +49,15 @@
           - 80
           cidr_ip: 0.0.0.0/0
 
-    - name: Create Tokyo EC2 key
-      ec2_key:
-        name: testkey
-        region: ap-northeast-1
-      register: key_result
-
-    - name: Save Private Key
-      copy: content="{{ key_result.key.private_key }}" dest=/root/.ssh/testkey.pem mode=0400
-      when: key_result.changed
-
     - name: Create EC2
       ec2:
-        key_name: testkey
+        key_name: sangyun-tokyo-keypair
         instance_tags:
-          Name: test EC2
-        region: ap-northeast-1
+          Name: devos-demo-ec2
+        region: ap-northeast-3
         instance_type: t2.micro
-        image: ami-0ce107ae7af2e92b5
-        group: demo sg devos
+        image: ami-0de5311b2a443fb89
+        group: devos-demo-sg
         wait: yes
         count: 1
         vpc_subnet_id: "{{ subnet_result.subnet.id }}"
