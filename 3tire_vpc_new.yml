@@ -1,0 +1,73 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+    - name: Create VPC
+      ec2_vpc_net:
+        name: Test111 VPC
+        cidr_block: 10.10.0.0/16
+        region: ap-northeast-3
+        state: present
+      register: vpc_result
+
+    - name: Create Internet Gateway
+      ec2_vpc_igw:
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-3
+        state: present
+        tags:
+          Name: tokyo_igw
+
+    - name: Create web Subnet
+      ec2_vpc_subnet:
+        cidr: 10.10.0.0/24
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-3
+        az: ap-northeast-3a
+        map_public: yes
+        state: present
+        tags:
+          Name: WEB Subnet
+      register: web_subnet_result
+
+    - name: Create WAS Subnet
+      ec2_vpc_subnet:
+        cidr: 10.10.1.0/24
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-3
+        az: ap-northeast-3a
+        map_public: yes
+        state: present
+        tags:
+          Name: WAS Subnet
+      register: was_subnet_result
+
+    - name: Create DB Subnet
+      ec2_vpc_subnet:
+        cidr: 10.10.2.0/24
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-3
+        az: ap-northeast-3a
+        map_public: yes
+        state: present
+        tags:
+          Name: DB Subnet
+      register: db_subnet_result
+
+    - name: Create Routing Table
+      ec2_vpc_route_table:
+        vpc_id: "{{ vpc_result.vpc.id }}"
+        region: ap-northeast-3
+        tags:
+          Name: DEVOS Routing Table
+        state: present
+        subnets: 
+          - "{{ web_subnet_result.subnet.id }}"
+          - "{{ was_subnet_result.subnet.id }}"
+          - "{{ db_subnet_result.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+      register: public_route_table
