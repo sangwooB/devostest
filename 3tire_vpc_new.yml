@@ -6,8 +6,8 @@
   tasks:
     - name: Create VPC
       ec2_vpc_net:
-        name: Test111 VPC
-        cidr_block: 10.10.0.0/16
+        name: DevOS DEMO VPC
+        cidr_block: 10.15.0.0/16
         region: ap-northeast-3
         state: present
       register: vpc_result
@@ -18,56 +18,33 @@
         region: ap-northeast-3
         state: present
         tags:
-          Name: tokyo_igw
+          Name: DevOS_DEMO_tokyo_igw
 
-    - name: Create web Subnet
+    - name: Create Public Subnet
       ec2_vpc_subnet:
-        cidr: 10.10.0.0/24
+        cidr: 10.15.0.0/24
         vpc_id: "{{ vpc_result.vpc.id }}"
         region: ap-northeast-3
-        az: ap-northeast-3a
+        az: ap-northeast-1a
         map_public: yes
         state: present
-        tags:
-          Name: WEB Subnet
-      register: web_subnet_result
+      register: subnet_result
 
-    - name: Create WAS Subnet
-      ec2_vpc_subnet:
-        cidr: 10.10.1.0/24
+    - name: Create Security Group
+      ec2_group:
+        name: devos-demo-sg
         vpc_id: "{{ vpc_result.vpc.id }}"
         region: ap-northeast-3
-        az: ap-northeast-3a
-        map_public: yes
         state: present
+        description: allow 22, 80 devos-demo-sg 
         tags:
-          Name: WAS Subnet
-      register: was_subnet_result
-
-    - name: Create DB Subnet
-      ec2_vpc_subnet:
-        cidr: 10.10.2.0/24
-        vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-3
-        az: ap-northeast-3a
-        map_public: yes
-        state: present
-        tags:
-          Name: DB Subnet
-      register: db_subnet_result
-
-    - name: Create Routing Table
-      ec2_vpc_route_table:
-        vpc_id: "{{ vpc_result.vpc.id }}"
-        region: ap-northeast-3
-        tags:
-          Name: DEVOS Routing Table
-        state: present
-        subnets: 
-          - "{{ web_subnet_result.subnet.id }}"
-          - "{{ was_subnet_result.subnet.id }}"
-          - "{{ db_subnet_result.subnet.id }}"
-        routes:
-          - dest: 0.0.0.0/0
-            gateway_id: "{{ igw.gateway_id }}"
-      register: public_route_table
+          Name: devos-demo-sg
+        rules:
+        - proto: tcp
+          ports:
+          - 22
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          ports:
+          - 80
+          cidr_ip: 0.0.0.0/0
