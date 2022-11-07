@@ -1,0 +1,45 @@
+---
+- hosts: webserver
+  gather_facts: False
+  become: true
+  become_method: sudo
+  
+  tasks:    
+
+    - name: Enable nginx for amazon linux 2
+      shell: "amazon-linux-extras enable nginx1.12"
+      become: yes
+
+    - name: Install Nginx
+      yum:
+        name: nginx
+        state: present
+    
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+
+- hosts: wasserver
+  gather_facts: False
+  become: true
+  become_method: sudo
+
+  tasks:
+    - name: download tomcat
+      get_url:
+        url: https://mirror.dsrg.utoronto.ca/apache/tomcat/tomcat-8/v8.5.83/bin/apache-tomcat-8.5.83.tar.gz
+        dest: /usr/local
+
+    - name: copy tomcat
+      unarchive:
+        src: "/usr/local/apache-tomcat-8.5.83.tar.gz"
+        dest: /usr/local
+        remote_src: yes
+
+    - name: renaming tomcat
+      command: mv /usr/local/apache-tomcat-8.5.83 /usr/local/tomcat
+
+    - name: starting tomcat
+      shell: nohup /usr/local/tomcat/bin/startup.sh &
+
