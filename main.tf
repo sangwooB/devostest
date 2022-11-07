@@ -198,24 +198,37 @@ resource "aws_security_group" "ssh" {
   }
 }
 
-resource "aws_instance" "web" {
-  ami                         = "ami-0708689cfc3edb71d" # Amazon Linux 2 (Seoul)
+resource "aws_instance" "web1" {
+  ami                         = "ami-094bbd9e922dc515d" # Amazon Linux 2 (Seoul)
   instance_type               = var.instance_type
   vpc_security_group_ids      = [aws_security_group.web.id, aws_security_group.ssh.id]
-  availability_zone           = "ap-northeast-3a"
+  availability_zone           = var.availability_zone_names_a
   subnet_id                   = aws_subnet.pub_a.id
   associate_public_ip_address = true
   key_name                    = var.key_pair
   tags = {
-    Name = "Devos-web"
+    Name = "Devos-web-1"
   }
 }
 
-resource "aws_instance" "was" {
-  ami                         = "ami-0708689cfc3edb71d" # Amazon Linux 2 (Seoul)
+resource "aws_instance" "web2" {
+  ami                         = "ami-094bbd9e922dc515d" # Amazon Linux 2 (Seoul)
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = [aws_security_group.web.id, aws_security_group.ssh.id]
+  availability_zone           = var.availability_zone_names_c
+  subnet_id                   = aws_subnet.pub_c.id
+  associate_public_ip_address = true
+  key_name                    = var.key_pair
+  tags = {
+    Name = "Devos-web-2"
+  }
+}
+
+resource "aws_instance" "was1" {
+  ami                         = "ami-094bbd9e922dc515d" # Amazon Linux 2 (Seoul)
   instance_type               = var.instance_type
   vpc_security_group_ids      = [aws_security_group.was.id, aws_security_group.ssh.id]
-  availability_zone           = "ap-northeast-3a"
+  availability_zone           = var.availability_zone_names_a
   subnet_id                   = aws_subnet.pub1_a.id
   associate_public_ip_address = true
   key_name                    = var.key_pair
@@ -224,7 +237,37 @@ resource "aws_instance" "was" {
               sudo yum install java-1.8.0-openjdk -y
               EOF
   tags = {
-    Name = "Devos-was"
+    Name = "Devos-was-1"
+  }
+}
+
+resource "aws_instance" "was2" {
+  ami                         = "ami-094bbd9e922dc515d" # Amazon Linux 2 (Seoul)
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = [aws_security_group.was.id, aws_security_group.ssh.id]
+  availability_zone           = var.availability_zone_names_c
+  subnet_id                   = aws_subnet.pub1_c.id
+  associate_public_ip_address = true
+  key_name                    = var.key_pair
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum install java-1.8.0-openjdk -y
+              EOF
+  tags = {
+    Name = "Devos-was-2"
+  }
+}
+
+resource "aws_instance" "db" {
+  ami                         = "ami-094bbd9e922dc515d" # Amazon Linux 2 (Seoul)
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = [aws_security_group.was.id, aws_security_group.ssh.id]
+  availability_zone           = var.availability_zone_names_a
+  subnet_id                   = aws_subnet.pub2_a.id
+  associate_public_ip_address = true
+  key_name                    = var.key_pair
+  tags = {
+    Name = "Devos-DB"
   }
 }
 

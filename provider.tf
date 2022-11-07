@@ -1,3 +1,3 @@
 provider "aws" {
-    region = "ap-northeast-3" # Asia Pacific (Seoul) region
+    region = var.region # Asia Pacific (Seoul) region
 }
